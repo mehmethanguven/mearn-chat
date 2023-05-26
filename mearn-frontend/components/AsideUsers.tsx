@@ -61,11 +61,10 @@ const AsideUsers = () => {
                         <div className='flex items-center justify-center w-10 h-10 p-0 mr-2 text-5xl font-bold text-gray-800 rounded-full cursor-pointer profile-img border-slate-50'>
                           {user && user.imageUrl != undefined ? (
                             <div className='w-full h-full'>
-                              <Image
+                              <img
                                 src={user.imageUrl}
-                                width={0}
-                                height={0}
-                                sizes='100vh'
+                                width={'100%'}
+                                height='100%'
                                 className='w-full h-full rounded-full'
                               />
                             </div>

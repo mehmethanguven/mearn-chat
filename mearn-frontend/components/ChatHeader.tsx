@@ -21,7 +21,6 @@ const ChatHeader = () => {
 
   useEffect(() => {
     if (contact) {
-      console.log('contact', contact)
       setSelectedContact(contact)
     }
   }, [contact])

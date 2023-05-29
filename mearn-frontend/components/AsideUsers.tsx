@@ -154,7 +154,7 @@ const AsideUsers = () => {
                   ))}
                 </div>
               ) : (
-                <p>Les autres membres ne sont pas disponibles</p>
+                <p>Other members are not available</p>
               )}
             </>
           )}

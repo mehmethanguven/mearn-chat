@@ -3,7 +3,7 @@ import { logout } from '../services/features/auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../services/store'
 import { useRouter } from 'next/router'
-import { MdLogout } from 'react-icons/md'
+import { MdLogout, MdHome } from 'react-icons/md'
 import { CiUser } from 'react-icons/ci'
 import Link from 'next/link'
 import AsideUsers from './mobile/Users'
@@ -29,6 +29,12 @@ const RoomAside = () => {
   return (
     <aside className='relative flex-col justify-between hidden w-20 p-2 text-white bg-gray-900 md:flex'>
       <div className='cursor-pointer'>
+        <div className='flex items-center justify-center pb-4'>
+          <Link href={'/'}>
+            <MdHome size={48} />
+          </Link>
+        </div>
+
         <Link href='/auth/profil'>
           <div className='flex items-center justify-center w-full h-12 text-4xl font-bold text-gray-800 profile bg-slate-100 rounded-xl'>
             {currentUser && currentUser.imageUrl ? (

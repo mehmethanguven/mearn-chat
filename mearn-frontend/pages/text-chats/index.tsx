@@ -42,9 +42,8 @@ const TextChatsPage = () => {
   }, [isErrorMessages, isErrorUser])
 
   useEffect(() => {
+    if (!user) router.push('/auth/login')
     setCurrentUser(user)
-
-    return () => {}
   }, [])
 
   return (

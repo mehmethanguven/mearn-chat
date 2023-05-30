@@ -1,14 +1,59 @@
-import Link from 'next/link'
+import type { GetServerSideProps, NextPage } from 'next'
+import Head from 'next/head'
+import { parseCookies } from 'nookies'
 
-const VideoChatsPage = () => {
+import { AnswerCallModal } from '../../components/AnswerCallModal'
+import { FloatButtons } from '../../components/FloatButtons'
+import { Loading } from '../../components/Loading'
+import { RequestPermissions } from '../../components/RequestPermissions'
+import { VideoPlayer } from '../../components/VideoPlayer'
+import { useSocket } from '../../hooks/useSocket'
+
+const Meet: NextPage = () => {
+  const { isLoadingCheckPermissions, userGrantedAudioAndVideoPermissions } =
+    useSocket()
+
   return (
-    <div className='p-4'>
-      Video Chats Page
-      <div className='p-2 mt-5 text-center text-white bg-red-500 rounded-lg shadow-lg w-28'>
-        <Link href='/'>Home</Link>
-      </div>
-    </div>
+    <main className='flex flex-col items-center justify-center w-screen h-screen'>
+      <Head>
+        <title>React Video Chat</title>
+      </Head>
+
+      <section className='w-full h-full'>
+        {isLoadingCheckPermissions && <Loading />}
+
+        {!userGrantedAudioAndVideoPermissions && <RequestPermissions />}
+
+        {!isLoadingCheckPermissions && userGrantedAudioAndVideoPermissions && (
+          <VideoPlayer />
+        )}
+      </section>
+
+      {userGrantedAudioAndVideoPermissions && (
+        <>
+          <FloatButtons />
+          <AnswerCallModal />
+        </>
+      )}
+    </main>
   )
 }
 
-export default VideoChatsPage
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const cookies = parseCookies(context)
+
+//   if (!cookies['@reactVideoChat/myName']) {
+//     return {
+//       redirect: {
+//         destination: '/login',
+//         permanent: false,
+//       },
+//     }
+//   }
+
+//   return {
+//     props: {},
+//   }
+// }
+
+export default Meet

@@ -15,7 +15,8 @@ const RoomAside = () => {
   const router = useRouter()
 
   useEffect(() => {
-    if (user) {
+    if (!user) router.push('/auth/login')
+    else {
       setCurrentUser(user)
     }
 
@@ -31,7 +32,7 @@ const RoomAside = () => {
       <div className='cursor-pointer'>
         <div className='flex items-center justify-center pb-4'>
           <Link href={'/'}>
-            <MdHome size={48} />
+            <MdHome size={32} />
           </Link>
         </div>
 

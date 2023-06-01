@@ -47,6 +47,8 @@ build/Release
 node_modules/
 jspm_packages/
 
+dist/
+
 # TypeScript v1 declaration files
 typings/
 
@@ -122,7 +124,6 @@ typings/
 
 # production
 /build
-
 # misc
 .DS_Store
 *.pem

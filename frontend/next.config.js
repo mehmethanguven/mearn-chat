@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  // webpack5: true,
+  // webpack: (config) => {
+  //   config.resolve.fallback = { fs: false }
+  // },
   images: {
     domains: [
       'res.cloudinary.com',

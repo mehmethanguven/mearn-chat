@@ -14,8 +14,16 @@ import AsideMobileUsers from '../components/mobile/Users'
 import AsideUsers from '../components/AsideUsers'
 import { MdMessage } from 'react-icons/md'
 import { toast } from 'react-toastify'
+import Email from '../components/email-templates/SuccessfulJoin'
+
+interface DataProps {
+  name: string
+  email: string
+  message: string
+}
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
   const [currentUser, setCurrentUser] = useState<any>(null)
@@ -52,6 +60,33 @@ export default function Home() {
     return () => {}
   }, [])
 
+  const onSendMail = async (data: DataProps) => {
+    try {
+      setIsLoading(true)
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const body = await res.json()
+
+      if (res.ok) {
+        alert(`${body.message} 🚀`)
+      }
+
+      if (res.status === 400) {
+        alert(`${body.message} 😢`)
+      }
+
+      setIsLoading(false)
+    } catch (err) {
+      console.log('Something went wrong: ', err)
+    }
+  }
+
   return (
     <>
       <div className={styles.container}>
@@ -73,6 +108,19 @@ export default function Home() {
             </div>
             <div className='p-2 mt-5 text-center text-white bg-green-500 rounded-lg shadow-lg w-28'>
               <Link href='/online-users'>Online Users</Link>
+            </div>
+            <div className='p-2 mt-5 text-center text-white bg-gray-500 rounded-lg shadow-lg w-28'>
+              <button
+                onClick={() =>
+                  onSendMail({
+                    name: 'Mehmethan Guven',
+                    email: 'hankutis@gmail.com',
+                    message: 'React Mail test',
+                  })
+                }
+              >
+                Send Email
+              </button>
             </div>
           </div>
         </div>

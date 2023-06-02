@@ -54,7 +54,7 @@ const Messages = () => {
         <AsideUsers />
         {/* Main messages */}
         <div className='relative flex flex-col w-full p-0 m-0'>
-          <div className='absolute top-0 bottom-0 left-0 right-0 flex flex-col p-0 m-0 bg-gray-100 rounded-xl sm:m-2'>
+          <div className='absolute top-0 bottom-0 left-0 right-0 flex flex-col p-0 m-0 bg-stone-300 rounded-xl sm:m-2'>
             {/* header */}
             <ChatHeader />
 

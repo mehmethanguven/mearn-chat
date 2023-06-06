@@ -4,17 +4,12 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from '../styles/Home.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../services/features/auth/authSlice'
 import { getUsers } from '../services/features/users/usersSlice'
 import { useEffect, useState } from 'react'
 import { AppDispatch } from '../services/store'
 import Link from 'next/link'
-import RoomAside from '../components/RoomAside'
-import AsideMobileUsers from '../components/mobile/Users'
-import AsideUsers from '../components/AsideUsers'
 import { MdMessage } from 'react-icons/md'
 import { toast } from 'react-toastify'
-import Email from '../components/email-templates/SuccessfulJoin'
 
 interface DataProps {
   name: string

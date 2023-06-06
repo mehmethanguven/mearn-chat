@@ -19,39 +19,35 @@ const ChatItems = () => {
       {messages && messages.length > 0 ? (
         <div className='pb-20 sm:pb-16'>
           {messages.map((msg: any) => (
-            <div className='flex flex-col h-full ' key={msg._id}>
+            <div className='flex flex-col h-full' key={msg._id}>
               {msg.sender === user?._id.toString() ? (
-                <div className='self-end max-w-full p-2 m-2 rounded-br-none bg-gray-50 w-max rounded-2xl'>
-                  <div className='flex items-center justify-between w-full mb-2'>
-                    <h6 className='text-xs text-slate-800'>
-                      <span>{msg.sender && msg.sender.name}</span>{' '}
-                      <span>{msg.sender && msg.sender.lastname}</span>
-                    </h6>
-                    <span className='text-blue-900'> __ </span>
-                    <h6 className='text-xs text-slate-800'>
-                      {new Date(msg.updatedAt).toLocaleTimeString()}
-                    </h6>
-                  </div>
-                  <p className='w-full p-1 text-sm md:text-lg h-max text-slate-800'>
-                    {msg.content}
+                <div className='self-end max-w-sm p-2 m-2 rounded-br-none md:max-w-lg bg-gray-50 w-max rounded-2xl'>
+                  <p className='text-sm md:text-lg text-slate-800'>
+                    <span className='text-base'>{msg.content}</span>
+                    <span className='inline-flex gap-2 ml-10 text-xs text-slate-800'>
+                      <span className='text-xs text-slate-800'>
+                        {new Date(msg.updatedAt).toLocaleTimeString()}
+                      </span>
+                    </span>
                   </p>
                 </div>
               ) : (
-                <div className='self-start max-w-full p-2 m-2 rounded-bl-none bg-slate-50 w-max rounded-2xl'>
-                  <div className='flex items-center justify-between mb-2'>
+                <div className='self-start max-w-sm p-2 m-2 rounded-bl-none md:max-w-md bg-slate-50 w-max rounded-2xl'>
+                  <div className='text-sm md:text-lg text-slate-800'>
                     <h6 className='text-xs text-slate-800'>
-                      <span>{selectedContact && selectedContact.name}</span>
+                      <span className='mr-1'>
+                        {selectedContact && selectedContact.name}
+                      </span>
                       <span>{selectedContact && selectedContact.lastname}</span>
                     </h6>
-                    <span className='text-slate-700'> __ </span>
+                    <span className='text-base'>{msg.content}</span>
 
-                    <h6 className='text-xs text-slate-800'>
-                      {new Date(msg.updatedAt).toLocaleTimeString()}
-                    </h6>
+                    <span className='inline-flex gap-2 ml-10 text-xs text-slate-800'>
+                      <span className='text-xs text-slate-800'>
+                        {new Date(msg.updatedAt).toLocaleTimeString()}
+                      </span>
+                    </span>
                   </div>
-                  <p className='text-sm md:text-lg text-slate-800'>
-                    {msg.content}
-                  </p>
                 </div>
               )}
             </div>

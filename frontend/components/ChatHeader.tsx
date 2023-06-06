@@ -26,13 +26,10 @@ const ChatHeader = () => {
   }, [contact])
 
   return (
-    <div className='flex items-center w-full gap-2 p-2 text-white bg-slate-800 rounded-t-xl'>
-      <div className='flex items-center justify-center w-12 h-12 text-2xl transition-all duration-700 rounded-full cursor-pointer bg-slate-800 hover:bg-slate-600'>
-        <Link href='/'>
-          <>
-            {' '}
-            <VscChevronLeft />
-          </>
+    <div className='flex items-center w-full gap-2 p-2 bg-gray-200 text-slate-800 rounded-t-xl'>
+      <div className='flex items-center justify-center w-12 h-12 text-2xl text-white transition-all duration-700 rounded-full cursor-pointer bg-slate-400 hover:bg-slate-600'>
+        <Link href='/text-chats'>
+          <VscChevronLeft />
         </Link>
       </div>
 

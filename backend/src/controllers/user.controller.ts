@@ -20,6 +20,21 @@ export const getAllUsers = asyncHandler(
   },
 )
 
+export const getCurrentUser = asyncHandler(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log('currentUser is called')
+    try {
+      const user = res.locals.user
+      res.status(200).json({ user })
+    } catch (error) {
+      const err = new Error('internal error')
+      res.status(500)
+      return next(err)
+    }
+  },
+)
+
 export const getOneUser = asyncHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
@@ -77,6 +92,7 @@ export const registerUser = asyncHandler(
         username: user.username,
         imageUrl: user.imageUrl,
         token: generateToken(user._id),
+        accessToken: generateToken(user._id),
       })
     } else {
       const err = new Error('internal error')
@@ -88,8 +104,10 @@ export const registerUser = asyncHandler(
 
 export const loginUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log('loginUser is called')
     try {
       const validation = validateLoginData(req.body)
+      console.log(validation)
       if (validation.error) {
         const err = new Error('Email or password is incorrect')
         res.status(400)
@@ -111,6 +129,13 @@ export const loginUser = asyncHandler(
         console.log(user)
       }
 
+      if (email) {
+        user = await User.findOne({
+          email,
+        })
+        console.log(user)
+      }
+
       if (user) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const isPasswordValid = bcrypt.compare(password, user.password!)
@@ -126,7 +151,9 @@ export const loginUser = asyncHandler(
             email: user.email,
             username: user.username,
             imageUrl: user.imageUrl,
+            phoneNumber: user.phoneNumber,
             token: generateToken(user._id),
+            accessToken: generateToken(user._id),
           })
         }
       } else {
@@ -170,6 +197,7 @@ export const updateImage = asyncHandler(
           username: user.username,
           imageUrl: user.imageUrl,
           token: generateToken(user._id),
+          accessToken: generateToken(user._id),
         })
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

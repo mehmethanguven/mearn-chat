@@ -5,7 +5,7 @@ import { iUsersIDMessage } from '../../../utils/types'
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URI
 
 const getMessages = async (receiverId: string, token: string) => {
-  token = token || JSON.parse(localStorage.getItem('chat-gda-user')!).token
+  token = token || JSON.parse(localStorage.getItem('mstalk-user')!).token
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -19,7 +19,7 @@ const getMessages = async (receiverId: string, token: string) => {
 }
 
 const getUserMessages = async (token: string) => {
-  token = token || JSON.parse(localStorage.getItem('chat-gda-user')!).token
+  token = token || JSON.parse(localStorage.getItem('mstalk-user')!).token
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -34,7 +34,7 @@ const addMessage = async (
   receiverId: string,
   token: string,
 ) => {
-  token = token || JSON.parse(localStorage.getItem('chat-gda-user')!).token
+  token = token || JSON.parse(localStorage.getItem('mstalk-user')!).token
 
   const config = {
     headers: {

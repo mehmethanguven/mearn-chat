@@ -8,7 +8,7 @@ import { getUsers } from '../../services/features/users/usersSlice'
 import { AppDispatch } from '../../services/store'
 
 const OnlineUsersPage = () => {
-  const { onlineUsers, emitLogout } = useSocket()
+  const { onlineUsers, emitLogout, setStatus } = useSocket()
 
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
@@ -40,12 +40,12 @@ const OnlineUsersPage = () => {
         Send Logout
       </button>
 
-      <div className='flex gap-4 py-5'>
+      <div className='flex flex-col items-center justify-center gap-4 py-5 md:flex-row'>
         {onlineUsers && onlineUsers.length > 1 ? (
           onlineUsers
             .filter((i) => i.id !== user._id)
             .map((user: OnlineUser) => (
-              <OnlineUserPage key={user.id} user={user} />
+              <OnlineUserPage key={user.id} user={user} setStatus={setStatus} />
             ))
         ) : (
           <div>No online user found</div>

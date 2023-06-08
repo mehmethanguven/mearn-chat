@@ -15,6 +15,7 @@ type SocketEmitEvents =
   | 'leavecall'
   | 'set-online'
   | 'set-offline'
+  | 'set-status'
 
 interface ISocketMe {
   socketId: string

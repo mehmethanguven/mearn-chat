@@ -48,6 +48,7 @@ interface ISocketContextData {
   userVideoRef: RefObject<HTMLVideoElement>
   requestAudioAndVideoPermissions: () => Promise<void>
   callUser: (userId: string) => void
+  setStatus: (userId: string, isReady: boolean) => void
   answerCall: () => void
   leaveCall: (socketId?: string) => void
   emitLogout: () => void
@@ -222,6 +223,12 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
     )
   }
 
+  function setStatus(userId: string, isReady: boolean) {
+    socketRef?.current?.emit<SocketEmitEvents>('set-status', userId, isReady)
+  }
+
+  // **
+
   function answerCall() {
     setCallAccepted(true)
 
@@ -286,6 +293,7 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
         userVideoRef,
         requestAudioAndVideoPermissions,
         callUser,
+        setStatus,
         answerCall,
         leaveCall,
         emitLogout,

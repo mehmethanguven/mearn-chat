@@ -20,6 +20,7 @@ enum EventEnum {
   SET_OFFLINE = 'set-offline',
   GET_ONLINE_USERS = 'get-online-users',
   ONLINE_USERS = 'online-users',
+  SET_STATUS = 'set-status',
 }
 
 export default EventEnum

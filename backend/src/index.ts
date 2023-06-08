@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 /* eslint-disable no-console */
 import express, { Application } from 'express'
 import dotenv from 'dotenv'
@@ -19,6 +20,7 @@ import errors from './middlewares/error.middleware'
 import type { IAnswerCall } from './interfaces/IAnswerCall'
 import type { ICallUser } from './interfaces/ICallUser'
 import EventEnum from './utils/events'
+//import { isAuth } from './middlewares/auth'
 // config
 dotenv.config()
 connectDB()
@@ -51,18 +53,24 @@ const io = socket.init(httpServer)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 // io.on('connection', (socket: any) => {
 //   // eslint-disable-next-line no-console
-//   console.log('socket connected to client')
+//   console.log('socket connected to from')
 //   socket.emit('message', 'hello world')
 // })
 type User = {
-  id: number
+  _id: string
+  id: string
   email: string
   username: string
   socketId: string
   isOnline: boolean
+  isReady: boolean
+  emit: (key: string, data: any) => void
 }
 
+// io.use(isAuth)
 const onlineUsers: User[] = []
+// const connectedUsers = {}
+
 io.on('connection', (socket: any) => {
   const connectedUsers: { [key: string]: User } = {}
   //console.log(socket.id)
@@ -73,6 +81,7 @@ io.on('connection', (socket: any) => {
       const index = onlineUsers.findIndex((i: User) => i.id === user.id)
       //	console.log('set_online is called and index is', index)
       if (index === -1) {
+        user.isReady = true
         socket.username = user.username
         socket.userId = user.id
         connectedUsers[user.id] = socket
@@ -83,16 +92,37 @@ io.on('connection', (socket: any) => {
         //io.emit('is_online', true)
         io.emit(EventEnum.ONLINE_USERS, onlineUsers)
       }
-      //console.log('onlineUsers', onlineUsers);
-      // console.log('onlineUsers length ', onlineUsers.length.toString())
-      // if (connectedUsers.hasOwnProperty(user.id)) {
-      //   connectedUsers[user._id].emit('is_online', true);
-      // }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error)
     }
   })
+
+  socket.on(EventEnum.SET_STATUS, (userId: string, isReady: boolean) =>
+    setStatus(userId, isReady),
+  )
+
+  const setStatus = (userId: string, isReady: boolean) => {
+    try {
+      const index = onlineUsers.findIndex((i) => i.id === userId)
+      const user = onlineUsers.find((i) => i.id === userId)
+      console.log('set busy user is called', userId, index)
+      console.log('onlineUsers', onlineUsers)
+      console.log('user', user)
+      if (index > -1) {
+        const user = onlineUsers.find((i) => i.id === userId)
+        if (user != null) {
+          user.isReady = isReady
+          onlineUsers[index] = user
+        }
+        console.log('setBusy', user)
+        io.emit(EventEnum.ONLINE_USERS, onlineUsers)
+      }
+      //console.log('after set-busy onlineUsers length ', onlineUsers)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   socket.on(EventEnum.SET_OFFLINE, (userId: string) => {
     try {
@@ -149,6 +179,145 @@ io.on('connection', (socket: any) => {
 
   socket.on('leavecall', ({ socketId }: { socketId: string }) => {
     io.to(socketId).emit('leavecall', true)
+  })
+
+  // from knowtonow
+
+  socket.on('message_notifier', (data: any) => {
+    try {
+      const id = data.receiver._id
+      if (connectedUsers.hasOwnProperty(id)) {
+        connectedUsers[id].emit('message_notifier', data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  // const messageNotifier = (data: any) => {
+  //   try {
+  //     const id = data.receiver._id
+  //     if (connectedUsers.hasOwnProperty(id)) {
+  //       connectedUsers[id].emit('message_notifier', data)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+  socket.on('con_cancelled', (data: any) => {
+    try {
+      const toId = data.to._id
+      const fromId = data.client._id
+      console.log('fromId', fromId, 'toId', toId)
+
+      if (toId) {
+        setStatus(toId, true)
+      }
+      if (fromId) {
+        setStatus(toId, true)
+      }
+      // if (connectedUsers.hasOwnProperty(fromId)) {
+      // 	connectedUsers[fromId].emit('con_cancelled', data)
+      // }
+      if (connectedUsers.hasOwnProperty(toId)) {
+        connectedUsers[toId].emit('con_cancelled', data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+  socket.on('con_completed', (data: any) => {
+    console.log('con_completed is called', data.from._id)
+    try {
+      const toId = data.to._id
+      const fromId = data.from._id
+
+      if (toId) {
+        setStatus(toId, true)
+      }
+      if (fromId) {
+        setStatus(toId, true)
+      }
+      if (connectedUsers.hasOwnProperty(fromId)) {
+        connectedUsers[fromId].emit('con_completed', data)
+      }
+      if (connectedUsers.hasOwnProperty(toId)) {
+        connectedUsers[toId].emit('con_completed', data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  socket.on('con_requested', (data: any) => {
+    console.log('con request from to', data.from, data.to)
+
+    try {
+      const toId = data.to._id
+      const fromId = data.from._id
+
+      if (toId) {
+        setStatus(toId, false)
+      }
+      if (fromId) {
+        setStatus(toId, false)
+      }
+
+      console.log('con request from to', data.from, data.to)
+      if (connectedUsers.hasOwnProperty(toId)) {
+        connectedUsers[toId].emit('con_requested', data)
+      }
+      // if (connectedUsers.hasOwnProperty(fromId)) {
+      // 	connectedUsers[fromId].emit('con_requested', data)
+      // }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  socket.on('con_rejected', (data: any) => {
+    try {
+      const toId = data.to._id
+      const fromId = data.from._id
+
+      if (toId) {
+        setStatus(toId, true)
+      }
+      if (fromId) {
+        setStatus(toId, true)
+      }
+      if (connectedUsers.hasOwnProperty(fromId)) {
+        connectedUsers[fromId].emit('con_rejected', data)
+      }
+      // if (connectedUsers.hasOwnProperty(toId)) {
+      // 	connectedUsers[toId].emit('con_rejected', data)
+      // }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  socket.on('con_accepted', (data: any) => {
+    try {
+      console.log('connection accepted data', data)
+      const fromId = data.from._id
+      const toId = data.to._id
+      if (toId) {
+        setStatus(toId, false)
+      }
+      if (fromId) {
+        setStatus(toId, false)
+      }
+      if (connectedUsers.hasOwnProperty(fromId)) {
+        connectedUsers[fromId].emit('con_accepted', data)
+      }
+      // if (connectedUsers.hasOwnProperty(toId)) {
+      // 	connectedUsers[toId].emit('con_accepted', data)
+      // }
+    } catch (error) {
+      console.log(error)
+    }
   })
 })
 

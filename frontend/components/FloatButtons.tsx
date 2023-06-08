@@ -7,7 +7,7 @@ import { isMobileDevice } from '../utils/isMobileDevice'
 import { type IMakeACallModalHandle, MakeACallModal } from './MakeACallModal'
 
 const FloatButtons = () => {
-  const { me, userSocketId, call, callAccepted, callEnded, leaveCall } =
+  const { me, userSocketId, call, callAccepted, callEnded, leaveCall, user } =
     useSocket()
 
   const makeACallModalRef = useRef<IMakeACallModalHandle>(null)
@@ -29,6 +29,7 @@ const FloatButtons = () => {
   function handleLeaveCall() {
     // If I called another user, disconnect him too
     if (userSocketId) {
+      console.log('userSocketId', userSocketId)
       leaveCall(userSocketId)
 
       return
@@ -36,6 +37,7 @@ const FloatButtons = () => {
 
     // If I'm the one who accepted the call, disconnect the other user who called me
     if (call?.from) {
+      console.log('callfrom', call.from)
       leaveCall(call.from)
     }
   }

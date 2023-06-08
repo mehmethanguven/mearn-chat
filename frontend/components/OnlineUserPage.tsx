@@ -14,6 +14,7 @@ type OnlineUserPageProps = {
 }
 
 const OnlineUserPage = ({ user, setStatus }: OnlineUserPageProps) => {
+  const router = useRouter()
   return (
     <div className='w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
       <div className='flex justify-end px-4 pt-4'>
@@ -97,14 +98,13 @@ const OnlineUserPage = ({ user, setStatus }: OnlineUserPageProps) => {
             </a>
           </Link>
 
-          <Link href={'/video-chats'}>
-            <a
-              href='#'
-              className='inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-600 border border-gray-300 rounded-lg focus:ring-4 focus:outline-none focus:ring-gray-200 hover:bg-gray-400 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700'
-            >
-              Video Chat
-            </a>
-          </Link>
+          <button
+            disabled={!user.isReady}
+            onClick={() => router.push('/video-chats')}
+            className='inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-600 border border-gray-300 rounded-lg focus:ring-4 focus:outline-none focus:ring-gray-200 hover:bg-gray-400 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400'
+          >
+            {user.isReady ? 'Video Chat' : 'BUSY'}
+          </button>
           <button
             onClick={() => setStatus(user.id, !user.isReady)}
             className={clsx(

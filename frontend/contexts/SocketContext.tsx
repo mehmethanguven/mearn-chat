@@ -22,6 +22,7 @@ import {
 import { useSelector } from 'react-redux'
 import { OnlineUser } from '../types/online-user'
 import EventEnum from '../utils/events'
+import { iUser } from '../utils/types'
 
 interface ICall {
   isReceivedCall: boolean
@@ -52,6 +53,7 @@ interface ISocketContextData {
   answerCall: () => void
   leaveCall: (socketId?: string) => void
   emitLogout: () => void
+  user: iUser
 }
 
 interface ISocketContextProviderProps {
@@ -73,7 +75,7 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
   const [me, setMe] = useState<string>('')
   const [userSocketId, setUserSocketId] = useState<string>('')
   const [call, setCall] = useState<ICall>({} as ICall)
-  const [name, setName] = useState<string>('Anonymo')
+
   const [callAccepted, setCallAccepted] = useState<boolean>(false)
   const [callEnded, setCallEnded] = useState<boolean>(false)
 
@@ -86,7 +88,7 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
     isError: isErrorUser,
     errorMessage: errorUser,
   } = useSelector((state: any) => state.auth)
-
+  const [name, setName] = useState<string>(user?.name ?? 'Anonymo')
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
 
   useEffect(() => {
@@ -112,7 +114,7 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
     }
 
     const handler = (data: any) => {
-      console.log('onlineUsers data', data)
+      // console.log('onlineUsers data', data)
       setOnlineUsers(data)
     }
     socketRef?.current?.on<SocketListenEvents>('online-users', handler)
@@ -134,13 +136,6 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
     })
     //}
   }, [router.asPath])
-
-  // useEffect(() => {
-
-  //   return () => {
-
-  //   }
-  // }, [])
 
   async function checkAudioAndVideoPermissions() {
     setIsLoadingCheckPermissions(true)
@@ -263,8 +258,8 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
       socketRef?.current?.emit<SocketEmitEvents>('leavecall', { socketId })
     }
 
-    //window.location.reload()
-    router.push('/')
+    window.location.reload()
+    // router.push('/online-users')
   }
 
   const emitLogout = () => {
@@ -297,6 +292,7 @@ const SocketContextProvider = ({ children }: ISocketContextProviderProps) => {
         answerCall,
         leaveCall,
         emitLogout,
+        user,
       }}
     >
       {children}

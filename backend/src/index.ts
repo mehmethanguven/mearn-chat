@@ -70,9 +70,9 @@ type User = {
 // io.use(isAuth)
 const onlineUsers: User[] = []
 // const connectedUsers = {}
+const connectedUsers: { [key: string]: User } = {}
 
 io.on('connection', (socket: any) => {
-  const connectedUsers: { [key: string]: User } = {}
   //console.log(socket.id)
   socket.emit('me', { socketId: socket.id })
 
@@ -107,7 +107,7 @@ io.on('connection', (socket: any) => {
       const index = onlineUsers.findIndex((i) => i.id === userId)
       const user = onlineUsers.find((i) => i.id === userId)
       console.log('set busy user is called', userId, index)
-      console.log('onlineUsers', onlineUsers)
+      // console.log('onlineUsers', onlineUsers)
       console.log('user', user)
       if (index > -1) {
         const user = onlineUsers.find((i) => i.id === userId)
@@ -169,16 +169,34 @@ io.on('connection', (socket: any) => {
   })
 
   socket.on('calluser', ({ userToCall, signalData, from, name }: ICallUser) => {
-    //console.log('to', userToCall, 'from', from, 'name', name)
-    io.to(userToCall).emit('calluser', { signal: signalData, from, name })
+    console.log('to', userToCall, 'from', from, 'name', name)
+    //console.log('connectedUsers', connectedUsers[userToCall])
+    // io.to(userToCall).emit('calluser', { signal: signalData, from, name })
+    if (connectedUsers.hasOwnProperty(userToCall)) {
+      console.log('find the user to call', userToCall)
+      connectedUsers[userToCall].emit('calluser', {
+        signal: signalData,
+        from,
+        name,
+      })
+    }
   })
 
   socket.on('answercall', (data: IAnswerCall) => {
     io.to(data.to).emit('callaccepted', { signal: data.signal })
+    // console.log('answercall', data.to)
+    // if (connectedUsers.hasOwnProperty(data.to)) {
+    //   console.log('find the user answer the call', data.to)
+    //   connectedUsers[data.to].emit('callaccepted', { signal: data.signal })
+    // }
   })
 
   socket.on('leavecall', ({ socketId }: { socketId: string }) => {
     io.to(socketId).emit('leavecall', true)
+    // if (connectedUsers.hasOwnProperty(userId)) {
+    //   console.log('find the user leave the call', userId)
+    //   connectedUsers[userId].emit('leavecall', true)
+    // }
   })
 
   // from knowtonow
@@ -193,17 +211,6 @@ io.on('connection', (socket: any) => {
       console.log(error)
     }
   })
-
-  // const messageNotifier = (data: any) => {
-  //   try {
-  //     const id = data.receiver._id
-  //     if (connectedUsers.hasOwnProperty(id)) {
-  //       connectedUsers[id].emit('message_notifier', data)
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
 
   socket.on('con_cancelled', (data: any) => {
     try {
@@ -322,3 +329,14 @@ io.on('connection', (socket: any) => {
 })
 
 export default app
+
+// const messageNotifier = (data: any) => {
+//   try {
+//     const id = data.receiver._id
+//     if (connectedUsers.hasOwnProperty(id)) {
+//       connectedUsers[id].emit('message_notifier', data)
+//     }
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }

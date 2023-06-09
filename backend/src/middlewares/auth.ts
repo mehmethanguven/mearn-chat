@@ -19,6 +19,7 @@ export const isAuth = asyncHandler(
       try {
         // get token from request headers
         token = req.headers.authorization.split(' ')[1]
+        console.log('refresh token', token)
 
         //verify
         const decoded = jwt.verify(

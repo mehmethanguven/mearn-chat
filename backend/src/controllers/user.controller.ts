@@ -3,10 +3,11 @@ import { Request, Response, NextFunction } from 'express'
 import asyncHandler from 'express-async-handler'
 import bcrypt from 'bcryptjs'
 import User from '../models/user.model'
-import { generateToken } from '../utils/functions'
+import { generateRefreshToken, generateToken } from '../utils/functions'
 import cloudinary from '../config/cloudinary'
 import { validateLoginData, validateRegister } from '../utils/validation'
-
+import { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 export const getAllUsers = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -51,6 +52,40 @@ export const getOneUser = asyncHandler(
       const err = new Error('internal error')
       res.status(500)
       return next(err)
+    }
+  },
+)
+
+export const refresh = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { refresh } = req.body
+    console.log('refresh', refresh)
+    try {
+      //verify
+      const decoded = jwt.verify(
+        refresh,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        process.env.JWT_SECRET!,
+      ) as JwtPayload
+
+      // Get user from the token
+      const user = await User.findById(decoded.id)
+      if (user) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        res.status(201).json({
+          accessToken: generateToken(user._id),
+          refreshToken: generateRefreshToken(user._id),
+        })
+      } else {
+        const error = new Error('user not found')
+        res.status(404)
+        return next(error)
+      }
+    } catch (err) {
+      console.log('err', err)
+      const error = new Error('internal error')
+      res.status(500)
+      return next(error)
     }
   },
 )
@@ -154,6 +189,7 @@ export const loginUser = asyncHandler(
             phoneNumber: user.phoneNumber,
             token: generateToken(user._id),
             accessToken: generateToken(user._id),
+            refreshToken: generateRefreshToken(user._id),
           })
         }
       } else {
@@ -162,6 +198,7 @@ export const loginUser = asyncHandler(
         return next(error)
       }
     } catch (err) {
+      console.log('err', err)
       const error = new Error('internal error')
       res.status(500)
       return next(error)

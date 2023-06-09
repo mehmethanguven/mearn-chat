@@ -73,13 +73,13 @@ const onlineUsers: User[] = []
 const connectedUsers: { [key: string]: User } = {}
 
 io.on('connection', (socket: any) => {
-  //console.log(socket.id)
+  console.log(socket.id)
   socket.emit('me', { socketId: socket.id })
 
   socket.on(EventEnum.SET_ONLINE, (user: User) => {
     try {
       const index = onlineUsers.findIndex((i: User) => i.id === user.id)
-      //	console.log('set_online is called and index is', index)
+      console.log('set_online is called and index is', index)
       if (index === -1) {
         user.isReady = true
         socket.username = user.username
@@ -193,10 +193,10 @@ io.on('connection', (socket: any) => {
 
   socket.on('leavecall', ({ socketId }: { socketId: string }) => {
     io.to(socketId).emit('leavecall', true)
-    // if (connectedUsers.hasOwnProperty(userId)) {
-    //   console.log('find the user leave the call', userId)
-    //   connectedUsers[userId].emit('leavecall', true)
-    // }
+    if (connectedUsers.hasOwnProperty(socketId)) {
+      console.log('find the user leave the call', socketId)
+      connectedUsers[socketId].emit('leavecall', true)
+    }
   })
 
   // from knowtonow
